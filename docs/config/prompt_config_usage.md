@@ -76,7 +76,7 @@ prompt_config.set_prompt(
 
 # 修改现有提示词
 prompt_config.set_prompt(
-    prompt_type='llm', 
+    prompt_type='llm',
     prompt_name='coolpapaers',
     template="新的提示词模板\n\n{text}"
 )
@@ -123,8 +123,8 @@ else:
 ```python
 # 基本格式化
 formatted = prompt_config.format_prompt(
-    prompt_type='llm', 
-    prompt_name='coolpapaers', 
+    prompt_type='llm',
+    prompt_name='coolpapaers',
     text="这是一篇关于深度学习的论文..."
 )
 
@@ -149,19 +149,19 @@ prompts:
     description: "自定义多变量模板"
     template: |
       # {title}
-      
+
       作者: {author}
       发表年份: {year}
-      
+
       ## 摘要
-      
+
       {abstract}
-      
+
       ## 分析报告
-      
+
       这篇由{author}在{year}年发表的论文《{title}》主要内容是：
       {abstract}
-      
+
       以下是详细分析...
 ```
 
@@ -219,14 +219,14 @@ prompts:
     description: "复刻 papers.cool"  # 提示词描述
     template: |  # 提示词模板
       请仔细分析论文内容，并回答如下问题：
-      
+
       Q: 这篇论文是什么？
       概括该论文是做什么的。
-      
+
       # ... 模板内容 ...
-      
+
       {text}  # 占位符，会被实际内容替换
-  
+
   yuanbao:
     description: "类似混元元宝总结"
     template: |
@@ -302,9 +302,9 @@ from SmartPaper.core.prompt_config import prompt_config
 def use_special_prompts():
     # 这会使全局prompt_config实例切换到新的提示词目录
     special_config = PromptConfig("/path/to/special/prompts")
-    
+
     # 进行一些操作...
-    
+
     # 恢复为默认提示词配置
     default_config = PromptConfig()  # 会重新加载默认提示词目录
 ```
@@ -318,7 +318,7 @@ def use_special_prompts():
    ```python
    # 推荐
    from SmartPaper.core.prompt_config import prompt_config
-   
+
    # 不推荐（除非有特殊需求）
    from SmartPaper.core.prompt_config import PromptConfig
    new_config = PromptConfig()
@@ -335,7 +335,7 @@ def use_special_prompts():
    formatted = prompt_config.format_prompt('llm', 'template', text="内容")
    if formatted is None:
        print("格式化提示词失败，请检查模板和参数")
-   
+
    if not prompt_config.save('llm'):
        print("保存提示词失败，请检查文件权限")
    ```

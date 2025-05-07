@@ -15,6 +15,7 @@ from .layout_config import LayoutConfig
 # 全局布局检测模型
 LAYOUT_MODEL = None
 
+
 def init_layout_model(model_name="PP-DocLayout-S"):
     """初始化布局检测模型并返回模型实例"""
     global LAYOUT_MODEL
@@ -30,7 +31,7 @@ class LayoutDetector:
         enable_label_filtering=True,
         enable_box_containment_analysis=True,
         enable_formula_number_merging=True,
-        enable_image_title_merging=True,  
+        enable_image_title_merging=True,
         labels_to_filter=None,
     ):
         """
@@ -48,7 +49,7 @@ class LayoutDetector:
         # 初始化全局模型（如果尚未初始化）
         if LAYOUT_MODEL is None:
             init_layout_model()
-            
+
         # 判断传入的是模型实例还是模型名称，或使用全局模型
         if model is None:
             self.model = LAYOUT_MODEL
@@ -110,41 +111,41 @@ class LayoutDetector:
 
         # 进行后处理
         processed_result = self.post_process(result)
-        
+
         # 将后处理的结果保存到最终JSON文件
         self._save_result_to_json(processed_result, json_path)
-        
+
         # 删除临时文件
         os.remove(temp_json_path)
-        
+
         # 如果指定要删除结果文件
         if remove_result_file:
             os.remove(json_path)
 
         return processed_result
-        
+
     def _save_result_to_json(self, result: Dict, json_path: str) -> None:
         """
         将处理后的结果保存为JSON文件，确保复杂结构能够正确序列化
-        
+
         参数:
             result: 要保存的结果
             json_path: 保存路径
         """
         # 处理JSON序列化
         serializable_result = self._make_serializable(result)
-        
+
         # 保存到JSON文件
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(serializable_result, f, ensure_ascii=False, indent=2)
-    
+
     def _make_serializable(self, obj):
         """
         递归地处理对象，使其可JSON序列化
-        
+
         参数:
             obj: 要处理的对象
-            
+
         返回:
             可序列化的对象
         """
@@ -196,7 +197,7 @@ class LayoutDetector:
         # 2. 合并公式和公式序号
         if self._enable_formula_number_merging:
             result["boxes"] = self._merge_formula_with_numbers(result["boxes"])
-            
+
         # 3. 合并图片和图片标题
         if self._enable_image_title_merging:
             result["boxes"] = self._merge_image_with_titles(result["boxes"])
@@ -228,9 +229,7 @@ class LayoutDetector:
             return False
 
         # 计算交集的面积
-        intersection_area = (intersect_x2 - intersect_x1) * (
-            intersect_y2 - intersect_y1
-        )
+        intersection_area = (intersect_x2 - intersect_x1) * (intersect_y2 - intersect_y1)
 
         # 计算交集面积占box1面积的比例
         overlap_ratio = intersection_area / area_box1
@@ -275,9 +274,7 @@ class LayoutDetector:
 
         return result
 
-    def _calculate_distance_between_boxes(
-        self, box1: List[float], box2: List[float]
-    ) -> float:
+    def _calculate_distance_between_boxes(self, box1: List[float], box2: List[float]) -> float:
         """
         计算两个框之间的最小边界距离
 
@@ -319,9 +316,7 @@ class LayoutDetector:
         """
         # 识别所有公式框和公式序号框
         formula_boxes = [box for box in boxes if box.get("label") == "formula"]
-        formula_number_boxes = [
-            box for box in boxes if box.get("label") == "formula_number"
-        ]
+        formula_number_boxes = [box for box in boxes if box.get("label") == "formula_number"]
 
         # 如果没有公式序号框或公式框，直接返回原列表的副本
         if not formula_number_boxes or not formula_boxes:
@@ -353,9 +348,7 @@ class LayoutDetector:
             number_center_y = (number_coord[1] + number_coord[3]) / 2
 
             # 定义垂直容忍度（公式中心点和序号中心点的垂直距离允许范围）
-            vertical_tolerance = (
-                number_coord[3] - number_coord[1]
-            ) * 2  # 序号高度的2倍
+            vertical_tolerance = (number_coord[3] - number_coord[1]) * 2  # 序号高度的2倍
 
             # 筛选出垂直方向上大致对齐的公式框
             aligned_formulas = []
@@ -398,7 +391,9 @@ class LayoutDetector:
             elif aligned_formulas:
                 min_distance = float("inf")
                 for formula_box in aligned_formulas:
-                    formula_center_x = (formula_box["coordinate"][0] + formula_box["coordinate"][2]) / 2
+                    formula_center_x = (
+                        formula_box["coordinate"][0] + formula_box["coordinate"][2]
+                    ) / 2
                     number_center_x = (number_coord[0] + number_coord[2]) / 2
 
                     distance = abs(formula_center_x - number_center_x)
@@ -446,40 +441,40 @@ class LayoutDetector:
     def _merge_image_with_titles(self, boxes: List[Dict]) -> List[Dict]:
         """
         将图片标题框添加到相关的图片框中
-        
+
         参数:
             boxes: 包含框信息的字典列表
-            
+
         返回:
             List[Dict]: 处理后的框列表，原始列表不会被修改
         """
         # 识别所有图片框和图表框
         image_boxes = [box for box in boxes if box.get("label") == "image"]
         chart_boxes = [box for box in boxes if box.get("label") == "chart"]
-        
+
         # 识别所有图片标题框和图表标题框
         figure_title_boxes = [box for box in boxes if box.get("label") == "figure_title"]
         chart_title_boxes = [box for box in boxes if box.get("label") == "chart_title"]
-        
+
         # 所有的图片和图表框
         all_image_boxes = image_boxes + chart_boxes
         # 所有的标题框
         all_title_boxes = figure_title_boxes + chart_title_boxes
-        
+
         # 如果没有图片/图表框或标题框，直接返回原列表的副本
         if not all_image_boxes or not all_title_boxes:
             return boxes.copy()
-        
+
         # 创建结果列表
         result_boxes = []
         all_image_ids = [id(box) for box in all_image_boxes]
         all_title_ids = [id(box) for box in all_title_boxes]
-        
+
         # 复制非图片/图表和非标题的框到结果列表
         for box in boxes:
             if id(box) not in all_image_ids and id(box) not in all_title_ids:
                 result_boxes.append(box.copy())
-        
+
         # 为所有的图片/图表框创建副本，并初始化contains属性
         processed_image_boxes = []
         for image_box in all_image_boxes:
@@ -487,10 +482,10 @@ class LayoutDetector:
             if "contains" not in new_image_box:
                 new_image_box["contains"] = []
             processed_image_boxes.append(new_image_box)
-        
+
         # 已匹配的标题框ID
         matched_title_ids = set()
-        
+
         # 第一轮：按类型匹配（图片与图片标题，图表与图表标题）
         # 1. 匹配图片和图片标题
         for title_box in figure_title_boxes:
@@ -498,16 +493,16 @@ class LayoutDetector:
             title_coord = title_box["coordinate"]
             closest_image = None
             min_distance = float("inf")
-            
+
             # 只在图片框中寻找最近的
             for image_box in [box for box in processed_image_boxes if box.get("label") == "image"]:
                 image_coord = image_box["coordinate"]
                 distance = self._calculate_distance_between_boxes(image_coord, title_coord)
-                
+
                 if distance < min_distance:
                     min_distance = distance
                     closest_image = image_box
-            
+
             # 如果找到了匹配的图片框
             if closest_image:
                 closest_image["contains"].append(title_box.copy())
@@ -519,23 +514,23 @@ class LayoutDetector:
                     max(closest_image["coordinate"][3], title_coord[3]),
                 ]
                 matched_title_ids.add(title_id)
-        
+
         # 2. 匹配图表和图表标题
         for title_box in chart_title_boxes:
             title_id = id(title_box)
             title_coord = title_box["coordinate"]
             closest_chart = None
             min_distance = float("inf")
-            
+
             # 只在图表框中寻找最近的
             for chart_box in [box for box in processed_image_boxes if box.get("label") == "chart"]:
                 chart_coord = chart_box["coordinate"]
                 distance = self._calculate_distance_between_boxes(chart_coord, title_coord)
-                
+
                 if distance < min_distance:
                     min_distance = distance
                     closest_chart = chart_box
-            
+
             # 如果找到了匹配的图表框
             if closest_chart:
                 closest_chart["contains"].append(title_box.copy())
@@ -547,27 +542,27 @@ class LayoutDetector:
                     max(closest_chart["coordinate"][3], title_coord[3]),
                 ]
                 matched_title_ids.add(title_id)
-        
+
         # 第二轮：处理未匹配的标题框，尝试找最近的任何图片或图表
         for title_box in all_title_boxes:
             title_id = id(title_box)
             # 如果标题已经匹配，跳过
             if title_id in matched_title_ids:
                 continue
-                
+
             title_coord = title_box["coordinate"]
             closest_image = None
             min_distance = float("inf")
-            
+
             # 在所有图片和图表中寻找最近的
             for image_box in processed_image_boxes:
                 image_coord = image_box["coordinate"]
                 distance = self._calculate_distance_between_boxes(image_coord, title_coord)
-                
+
                 if distance < min_distance:
                     min_distance = distance
                     closest_image = image_box
-            
+
             # 如果找到了最近的图片或图表
             if closest_image:
                 closest_image["contains"].append(title_box.copy())
@@ -578,10 +573,10 @@ class LayoutDetector:
                     max(closest_image["coordinate"][2], title_coord[2]),
                     max(closest_image["coordinate"][3], title_coord[3]),
                 ]
-        
+
         # 将处理后的图片和图表框添加到结果列表
         result_boxes.extend(processed_image_boxes)
-        
+
         return result_boxes
 
 
@@ -589,14 +584,14 @@ class LayoutDetector:
 if __name__ == "__main__":
     # 预先初始化全局布局检测模型
     init_layout_model()
-    
+
     image_path = "./image.png"
     output_dir = "output"
     os.makedirs(output_dir, exist_ok=True)
-    
+
     # 使用全局模型创建检测器
     detector = LayoutDetector()
-    
+
     # 测试文档版面分析
     result = detector.detect_layout(
         image_path=image_path,

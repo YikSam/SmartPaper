@@ -222,13 +222,13 @@ response = llm.chat("你好")
 class CustomLLM:
     def __init__(self, api_key, model, **kwargs):
         # 初始化代码...
-        
+
     def chat(self, message, system_prompt="You are a helpful assistant.", stream=False):
         # 实现聊天功能...
-        
+
     def chat_with_history(self, messages, stream=False):
         # 实现带历史的聊天功能...
-        
+
     # 实现其他必要的方法...
 ```
 

@@ -1,6 +1,7 @@
 """
 将 PDF 文件转换为 Markdown 格式的文本
 """
+
 import os
 import fitz as pm
 import re
@@ -12,8 +13,9 @@ def page_to_text(page_texts: Dict[int, str]) -> str:
     for page_num in sorted(page_texts.keys()):
         markdown_content.append(page_texts[page_num])
     full_text: str = "\n\n".join(markdown_content)
-    
+
     return full_text
+
 
 def extract_pdf_content(pdf_path: str, output_dir: str, strip_references: bool = False) -> str:
 
@@ -24,7 +26,6 @@ def extract_pdf_content(pdf_path: str, output_dir: str, strip_references: bool =
     # 确保输出目录存在
     os.makedirs(output_dir, exist_ok=True)
 
-
     total_pages: int = len(pdf_document)
 
     references_found: bool = False
@@ -34,10 +35,12 @@ def extract_pdf_content(pdf_path: str, output_dir: str, strip_references: bool =
         current_page_text: str = page.get_text()
 
         if strip_references:
-            match: Optional[re.Match] = re.search(r"^\s*(References|参考文献)\s*$", current_page_text, re.IGNORECASE | re.MULTILINE)
+            match: Optional[re.Match] = re.search(
+                r"^\s*(References|参考文献)\s*$", current_page_text, re.IGNORECASE | re.MULTILINE
+            )
 
             if match:
-            
+
                 reference_start_index: int = match.start()
 
                 current_page_text = current_page_text[:reference_start_index].rstrip()
@@ -47,11 +50,11 @@ def extract_pdf_content(pdf_path: str, output_dir: str, strip_references: bool =
                 print(f"Found references on page {page_num + 1}.")
                 # 调试使用
                 # exit()
-                break 
+                break
 
         # 如果没有找到参考文献，或者未启用 strip_references，正常存储页面内容
         if not references_found:
-            
+
             page_texts[page_num + 1] = current_page_text
 
     pdf_document.close()
@@ -62,10 +65,10 @@ def extract_pdf_content(pdf_path: str, output_dir: str, strip_references: bool =
 
 
 def main() -> None:
-    pdf_file: str = "test.pdf" 
-    output_dir: str = "outputs/test_pdf_to_md_fitz"  
+    pdf_file: str = "test.pdf"
+    output_dir: str = "outputs/test_pdf_to_md_fitz"
 
-    strip_references: bool = True  
+    strip_references: bool = True
 
     full_text: str = extract_pdf_content(
         pdf_file,

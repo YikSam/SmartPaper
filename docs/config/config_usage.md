@@ -82,15 +82,15 @@ llm:
   provider: openai_siliconflow  # 默认 LLM 提供商
   max_requests: 10              # 最大请求次数
   default_model_index: 0        # 默认模型索引
-  
+
   openai_siliconflow:           # 提供商配置
     api_key: "your-api-key"     # API 密钥
     base_url: "https://api.siliconflow.com/v1"  # API 基础 URL
     models:                      # 可用模型
-      - "Qwen/Qwen2.5-7B-Instruct" 
+      - "Qwen/Qwen2.5-7B-Instruct"
     temperature: 0.7            # 默认温度
     max_tokens: 4096            # 默认最大生成 token 数
-    
+
   openai:                       # 另一个提供商
     api_key: "your-openai-key"
     models:
@@ -99,7 +99,7 @@ llm:
       - "gpt-3.5-turbo"
     temperature: 0.7
     max_tokens: 2048
-    
+
 document_converter:
   converter_name: "fitz_with_image"  # 文档转换器名称
 ```
@@ -235,35 +235,35 @@ class ConfigUI:
     def __init__(self, master):
         self.master = master
         self.config = Config()
-        
+
         # 创建 UI 组件
         self.provider_label = tk.Label(master, text="LLM 提供商:")
         self.provider_var = tk.StringVar(value=self.config.llm_provider)
         self.provider_menu = tk.OptionMenu(master, self.provider_var, "openai", "openai_siliconflow")
         self.provider_var.trace("w", self.update_provider)
-        
+
         self.api_key_label = tk.Label(master, text="API 密钥:")
         self.api_key_var = tk.StringVar(value=self.config.api_key)
         self.api_key_entry = tk.Entry(master, textvariable=self.api_key_var, width=40)
-        
+
         self.save_button = tk.Button(master, text="保存配置", command=self.save_config)
-        
+
         # 布局 UI 组件
         self.provider_label.grid(row=0, column=0, sticky="w", padx=5, pady=5)
         self.provider_menu.grid(row=0, column=1, sticky="w", padx=5, pady=5)
         self.api_key_label.grid(row=1, column=0, sticky="w", padx=5, pady=5)
         self.api_key_entry.grid(row=1, column=1, sticky="w", padx=5, pady=5)
         self.save_button.grid(row=2, column=1, sticky="e", padx=5, pady=10)
-    
+
     def update_provider(self, *args):
         provider = self.provider_var.get()
         self.config.llm_provider = provider
         self.api_key_var.set(self.config.api_key)
-    
+
     def save_config(self):
         provider = self.provider_var.get()
         api_key = self.api_key_var.get()
-        
+
         self.config.llm_provider = provider
         self.config.api_key = api_key
         self.config.save()

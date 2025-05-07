@@ -1,6 +1,7 @@
 """
 多模态模型对图像进行分析，生成标题和描述的工具类
 """
+
 import os
 import base64
 import hashlib
@@ -11,6 +12,7 @@ from PIL import Image
 from openai import OpenAI
 import time
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # 提示词模板
@@ -50,9 +52,9 @@ def extract_json_content(text: str) -> Dict[str, Any]:
     json_start = text.find("{")
     json_end = text.rfind("}")
 
-    if (json_start != -1 and json_end != -1 and json_end > json_start):
+    if json_start != -1 and json_end != -1 and json_end > json_start:
         try:
-            json_text = text[json_start: json_end + 1]
+            json_text = text[json_start : json_end + 1]
             result = json.loads(json_text)
             # 确保返回的字典包含必要的键
             if "title" not in result:
@@ -74,9 +76,7 @@ def extract_json_content(text: str) -> Dict[str, Any]:
         return result
     except json.JSONDecodeError:
         # 尝试从文本中提取一些信息作为描述
-        fallback_description = (
-            text.strip().replace("```json", "").replace("```", "").strip()[:50]
-        )
+        fallback_description = text.strip().replace("```json", "").replace("```", "").strip()[:50]
         return {
             "error": "无法提取JSON内容",
             "title": "",
@@ -87,10 +87,10 @@ def extract_json_content(text: str) -> Dict[str, Any]:
 def image_to_base64(image_path: str) -> str:
     """
     将图像文件转换为base64编码字符串
-    
+
     参数:
         image_path: 图像文件路径
-        
+
     返回:
         base64编码的图像字符串
     """
@@ -117,7 +117,7 @@ class ImageAnalysis:
         availabale_vision_models: List[str] = [
             "Qwen/Qwen2.5-VL-32B-Instruct",
             "Pro/Qwen/Qwen2.5-VL-7B-Instruct",
-        ],  
+        ],
         prompt: Optional[str] = None,
     ):
         # 优先使用传入的API密钥，否则从环境变量中读取
@@ -171,14 +171,14 @@ class ImageAnalysis:
 
         # 处理图像来源
         final_image_url = image_url
-        image_format = "jpeg" # 默认格式
+        image_format = "jpeg"  # 默认格式
         if local_image_path:
             # 简化图片格式处理
             try:
                 with Image.open(local_image_path) as img:
                     image_format = img.format.lower() if img.format else "jpeg"
             except Exception as e:
-                 logging.warning(f"无法打开或识别图片格式 {local_image_path}: {e}, 使用默认jpeg")
+                logging.warning(f"无法打开或识别图片格式 {local_image_path}: {e}, 使用默认jpeg")
 
             base64_image = image_to_base64(local_image_path)
             final_image_url = f"data:image/{image_format};base64,{base64_image}"
@@ -208,7 +208,7 @@ class ImageAnalysis:
             # 解析结果
             result_content = response.choices[0].message.content
             analysis_result = extract_json_content(result_content)
-            
+
             return analysis_result
 
         except Exception as e:
@@ -219,9 +219,9 @@ class ImageAnalysis:
 
 if __name__ == "__main__":
     image_analyzer = ImageAnalysis()
-    
+
     local_image = "./image.png"
-    
+
     # 分析图像
     start_time = time.time()
     result = image_analyzer.analyze_image(
@@ -233,4 +233,3 @@ if __name__ == "__main__":
     )
     print(json.dumps(result, ensure_ascii=False, indent=2))
     print(f"耗时: {time.time() - start_time:.2f}秒")
-

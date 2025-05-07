@@ -17,17 +17,12 @@ from app.utils.utils import ensure_directory, get_upload_path
 
 # 配置日志
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 # 创建FastAPI应用
-app = FastAPI(
-    title="SmartPaper API",
-    description="智能论文对话系统API接口",
-    version="1.0.0"
-)
+app = FastAPI(title="SmartPaper API", description="智能论文对话系统API接口", version="1.0.0")
 
 # 添加CORS中间件
 app.add_middleware(
@@ -48,19 +43,21 @@ ensure_directory(upload_dir)
 # 挂载静态文件目录（如果有前端页面）
 # app.mount("/static", StaticFiles(directory="static"), name="static")
 
+
 # 全局异常处理
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.exception("全局异常")
     return JSONResponse(
-        status_code=500,
-        content={"message": "发生内部服务器错误", "detail": str(exc)}
+        status_code=500, content={"message": "发生内部服务器错误", "detail": str(exc)}
     )
+
 
 # 添加健康检查端点
 @app.get("/health", tags=["health"])
 async def health_check():
     return {"status": "healthy"}
+
 
 # 根路径重定向
 @app.get("/")
@@ -90,9 +87,4 @@ async def root():
 
 if __name__ == "__main__":
     # 运行服务器
-    uvicorn.run(
-        "main:app", 
-        host="0.0.0.0", 
-        port=int(os.environ.get("PORT", 900)),
-        reload=True
-    )
+    uvicorn.run("main:app", host="0.0.0.0", port=int(os.environ.get("PORT", 900)), reload=True)

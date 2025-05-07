@@ -2,7 +2,7 @@ prompts:
   coolpapaers:
     description: "复刻 papers.cool"
     template: |
-      
+
       请仔细分析论文内容，并回答如下问题：
 
       Q: 这篇论文是什么？

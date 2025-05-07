@@ -1,5 +1,5 @@
 prompts:
-  coolpapaers:
+  coolpapaers-image:
     description: "复刻 papers.cool(带图版)"
     template: |
       你可以使用markdown格式来组织你的回答。请适当使用![image_name](image_url)格式引用论文中的关键图表。
@@ -37,7 +37,7 @@ prompts:
       请对论文的问题背景、方法、实验和贡献进行总体概括。
 
       {text}
-  yuanbao:
+  yuanbao-image:
     description: "类似混元元宝总结（带图版）"
     template: |
       你可以使用markdown格式来组织你的回答。请适当使用![image_name](image_url)格式引用论文中的关键图表。
@@ -60,7 +60,7 @@ prompts:
 
       {text}
 
-  methodology:
+  methodology-image:
     description: "研究方法论分析（带图版）"
     template: |
       你可以使用markdown格式来组织你的回答。请适当使用![image_name](image_url)格式引用论文中的关键图表。
@@ -83,7 +83,7 @@ prompts:
 
       {text}
 
-  results:
+  results-image:
     description: "实验结果分析（带图版）"
     template: |
       你可以使用markdown格式来组织你的回答。请适当使用![image_name](image_url)格式引用论文中的关键图表。
@@ -106,7 +106,7 @@ prompts:
 
       {text}
 
-  contribution:
+  contribution-image:
     description: "主要贡献分析（带图版）"
     template: |
       你可以使用markdown格式来组织你的回答。请适当使用![image_name](image_url)格式引用论文中的关键图表。
@@ -129,7 +129,7 @@ prompts:
 
       {text}
 
-  full_analysis:
+  full_analysis-image:
     description: "全面深入分析（带图版）"
     template: |
 

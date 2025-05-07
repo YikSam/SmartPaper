@@ -179,14 +179,14 @@ class ChatApp:
     def __init__(self):
         self.manager = ModelManager()
         # 应用初始化...
-        
+
     def send_message(self):
         user_message = self.input_field.get()
-        
+
         def update_ui(chunk):
             self.chat_display.insert(tk.END, chunk)
             self.chat_display.see(tk.END)
-        
+
         self.manager.stream_callback(
             message=user_message,
             callback=update_ui,

@@ -154,7 +154,7 @@ def batch_convert_pdfs(pdf_folder, output_base_folder, converter_type="fitz"):
             # 为每个PDF创建单独的输出文件夹
             base_name = os.path.splitext(filename)[0]
             output_dir = os.path.join(output_base_folder, base_name)
-            
+
             print(f"转换: {filename}")
             convert_pdf_to_markdown(
                 pdf_path=pdf_path,
